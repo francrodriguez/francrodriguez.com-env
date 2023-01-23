@@ -1,0 +1,72 @@
+version: "3"
+services:
+  web:
+    build:
+      context: ../../builds/php-fpm
+    container_name: web-francrodriguez
+    volumes:
+      - ../../src/francrodriguez.com-src/:/var/www
+    expose:
+      - "9000"
+    restart: unless-stopped
+    networks:
+      - devel-network
+  webserver:
+    build:
+      context: ../../builds/nginx
+    container_name: webserver-francrodriguez
+    volumes:
+      - ../../src/francrodriguez.com-src/:/var/www
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - web
+    networks:
+      - devel-network
+  redis:
+    image: redis:7.0.5
+    container_name: redis-francrodriguez
+    expose:
+      - "6379"
+    restart: unless-stopped
+    networks:
+      - devel-network
+  db:
+    image: mysql:8.0.31
+    container_name: db-francrodriguez
+    restart: unless-stopped
+    expose:
+      - "3306"
+    volumes:
+      - ../../data/mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      TZ: Europe/Madrid
+    networks:
+     - devel-network
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin-devel
+    restart: unless-stopped
+    environment:
+      PMA_HOST: db-devel
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      UPLOAD_LIMIT: 200M
+    ports:
+      - '8080:80'
+    volumes:
+      - /sessions
+    networks:
+     - devel-network
+networks:
+    devel-network:

@@ -1,0 +1,14 @@
+version: "3"
+services:
+  composer:
+    build:
+      context: ../../builds/composer
+    command: bash
+    volumes:
+      - ../../src/francrodriguez.com-src/:/var/www
+  npm:
+    build:
+      context: ../../builds/npm
+    command: bash
+    volumes:
+      - ../../src/francrodriguez.com-src/:/var/www

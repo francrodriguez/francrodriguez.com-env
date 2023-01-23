@@ -1,0 +1,6 @@
+.env
+dev.francrodriguez.com.pem
+dev.francrodriguez.com.key
+dev.francrodriguez.com.crt
+data/mysql/
+src/francrodriguez.com-src/
